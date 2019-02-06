@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  nginx:
+      image: nginx:latest
+      volumes:
+        - ./devops/nginx/nginx.conf:/etc/nginx/nginx.conf
+        - ./devops/nginx/app-server.conf:/etc/nginx/conf.d/app-server.conf
+      ports:
+        - "80:80"
+        - "443:443"
+      links:
+        - app
+
+  app:
+    build: .
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    container_name: app_service
+    volumes:
+      - .:/usr/src/app
+    expose:
+      - "8000"
+
